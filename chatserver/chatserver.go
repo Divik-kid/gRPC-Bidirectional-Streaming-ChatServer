@@ -24,7 +24,7 @@ var messageHandleObject = messageHandle{}
 type ChatServer struct {
 }
 
-//define ChatService
+// define ChatService
 func (is *ChatServer) ChatService(csi Services_ChatServiceServer) error {
 
 	clientUniqueCode := rand.Intn(1e6)
@@ -40,12 +40,13 @@ func (is *ChatServer) ChatService(csi Services_ChatServiceServer) error {
 
 }
 
-//receive messages
+// receive messages
 func receiveFromStream(csi_ Services_ChatServiceServer, clientUniqueCode_ int, errch_ chan error) {
 
 	//implement a loop
 	for {
 		mssg, err := csi_.Recv()
+
 		if err != nil {
 			log.Printf("Error in receiving message from client :: %v", err)
 			errch_ <- err
@@ -59,18 +60,16 @@ func receiveFromStream(csi_ Services_ChatServiceServer, clientUniqueCode_ int, e
 				MessageUniqueCode: rand.Intn(1e8),
 				ClientUniqueCode:  clientUniqueCode_,
 			})
-			
-			log.Printf("%v", messageHandleObject.MQue[len(messageHandleObject.MQue)-1])
-			
-			messageHandleObject.mu.Unlock()
 
-			
+			log.Printf("%v", messageHandleObject.MQue[len(messageHandleObject.MQue)-1])
+
+			messageHandleObject.mu.Unlock()
 
 		}
 	}
 }
 
-//send message
+// send message
 func sendToStream(csi_ Services_ChatServiceServer, clientUniqueCode_ int, errch_ chan error) {
 
 	//implement a loop

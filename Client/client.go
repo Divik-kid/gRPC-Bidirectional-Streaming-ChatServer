@@ -29,7 +29,7 @@ func main() {
 	conn, err := grpc.Dial(serverID, grpc.WithInsecure())
 
 	if err != nil {
-		log.Fatalf("Faile to conncet to gRPC server :: %v", err)
+		log.Fatalf("Failed to conncet to gRPC server :: %v", err)
 	}
 	defer conn.Close()
 
@@ -53,7 +53,7 @@ func main() {
 
 }
 
-//clienthandle
+// clienthandle
 type clienthandle struct {
 	stream     chatserver.Services_ChatServiceClient
 	clientName string
@@ -68,10 +68,19 @@ func (ch *clienthandle) clientConfig() {
 		log.Fatalf(" Failed to read from console :: %v", err)
 	}
 	ch.clientName = strings.Trim(name, "\r\n")
-
+	//send "has joined here"
+	ch.notifyJoin()
 }
 
-//send message
+func (ch *clienthandle) notifyJoin() {
+	cMessage := &chatserver.FromClient{
+		Name: ch.clientName,
+		Body: "{has joined the chat}",
+	}
+	ch.stream.Send(cMessage)
+}
+
+// send message
 func (ch *clienthandle) sendMessage() {
 
 	// create a loop
@@ -99,7 +108,7 @@ func (ch *clienthandle) sendMessage() {
 
 }
 
-//receive message
+// receive message
 func (ch *clienthandle) receiveMessage() {
 
 	//create a loop
@@ -110,7 +119,7 @@ func (ch *clienthandle) receiveMessage() {
 		}
 
 		//print message to console
-		fmt.Printf("%s : %s \n",mssg.Name,mssg.Body)
-		
+		fmt.Printf("%s : %s \n", mssg.Name, mssg.Body)
+
 	}
 }
